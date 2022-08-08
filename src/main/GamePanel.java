@@ -12,16 +12,25 @@ import javax.swing.JPanel;
 import inputs.KeyInputs;
 import inputs.MouseInputs;
 
+import static animations.PlayerActions.*;
+import static animations.PlayerActions.Directions.*;
+
 @SuppressWarnings("serial")
 public class GamePanel extends JPanel {
 	private float xDelta = 100, yDelta = 100;
-	private BufferedImage player, subImage;
-
+	private BufferedImage player;
+	private BufferedImage[][] playerAnimations;
+	private int animationTick, animationIndex, animationSpeed = 15;
+	private int playerAction = PAUSE;
+	private int playerDir = -1;
+	private boolean moving = false;
+	
 	
 	public GamePanel() {
 		this.setPreferredSize(new Dimension(1280, 800));
 		
 		importImage();
+		loadAnimations();
 		
 		addKeyListener(new KeyInputs(this));
 		addMouseListener(new MouseInputs(this));
@@ -45,28 +54,76 @@ public class GamePanel extends JPanel {
 		}
 	}
 	
-	
-	public void setRectPos(int xDelta, int yDelta) {
-		this.xDelta = xDelta;
-		this.yDelta = yDelta;
+	private void loadAnimations() {
+		playerAnimations = new BufferedImage[9][6];
+		
+		for(int col = 0; col < playerAnimations.length; col++) {
+			for(int row = 0; row < playerAnimations[col].length; row++) {
+				playerAnimations[col][row] = player.getSubimage(row*64, col*40, 64, 40);
+			}			
+		}
 	}
 	
-	public void changeXDelta(int xDelta) {
-		this.xDelta += xDelta;
+	
+	public void setMovement(int direction) {
+		this.playerDir = direction;
+		moving = true;
+		
 	}
 	
-	public void changeYDelta(int yDelta) {
-		this.yDelta += yDelta;
+	public void setMoving(boolean moving) {
+		this.moving = moving;
 	}
 	
+	private void updateAnimation() {
+		animationTick++;
+		if(animationTick >= animationSpeed) {
+			animationTick = 0;
+			animationIndex++;
+			if(animationIndex >= getPlayerAmount(playerAction)) {
+				animationIndex = 0;
+			}
+		}
+	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		
-		subImage = player.getSubimage(1*64, 8*40, 64, 40);
-		g2d.drawImage(subImage, (int)xDelta, (int)yDelta, 128, 80, null);
+		updateAnimation();
+		setAnimation();
+		updatePos();
+		
+		g2d.drawImage(playerAnimations[playerAction][animationIndex], (int)xDelta, (int)yDelta, 250, 160, null);
 		
 		// repaint done in game thread/loop
+	}
+	
+	private void setAnimation() {
+		if(moving) {
+			playerAction = RUNNING;
+		}
+		else {
+			playerAction = PAUSE;
+		}
+	}
+	
+	private void updatePos() {
+		if(moving) {
+			switch(playerDir) {
+			case LEFT:
+				xDelta -= 5;
+				break;
+			case RIGHT:
+				xDelta += 5;
+				break;
+			case UP:
+				yDelta -= 5;
+				break;
+			case DOWN:
+				yDelta += 5;
+				break;
+			}
+		}
 	}
 }
