@@ -1,5 +1,10 @@
 package main;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+
+import entities.Player;
+
 public class Game implements Runnable {
 	
 	private GameWindow gameWindow;
@@ -8,16 +13,21 @@ public class Game implements Runnable {
 	private final int FPS = 120;
 	private final int UPS = 200;
 	
+	private Player player;
+	
 	public Game() {
-		gamePanel = new GamePanel();
-		gameWindow = new GameWindow(gamePanel);
+		initGame();
 		
-		//gamePanel.requestFocus(); // It's not working for inputs
+		gamePanel = new GamePanel(this);
+		gameWindow = new GameWindow(gamePanel);
 		gamePanel.setFocusable(true);
 		
 		startGameLoop();
 	}
 	
+	public void initGame() {
+		player = new Player(200, 200);
+	}
 	
 	private void startGameLoop() {
 		gameLoop = new Thread(this);
@@ -25,9 +35,14 @@ public class Game implements Runnable {
 	}
 	
 	public void update() {
-		gamePanel.updateGame();
+		player.update();
 	}
-
+	
+	public void render(Graphics g) {
+		Graphics2D g2d = (Graphics2D) g;
+		player.render(g2d);
+	}
+	
 	@Override
 	public void run() {
 		double timePerFrame = 1000000000.0 / FPS;
@@ -50,7 +65,7 @@ public class Game implements Runnable {
 			previousTime = currentTime;
 			
 			if(deltaU >= 1) {
-				update();
+				update(); // calling update per second
 				updates++;
 				deltaU--;
 			}
@@ -69,5 +84,13 @@ public class Game implements Runnable {
 				updates = 0;
 			}
 		}
+	}
+	
+	public void windowFocusLost() {
+		player.resetDirectionBooleans();
+	}
+	
+	public Player getPlayer() {
+		return this.player;
 	}
 }
