@@ -85,17 +85,18 @@ public class GamePanel extends JPanel {
 			}
 		}
 	}
+	
+	public void updateGame() {
+		updateAnimation();
+		setAnimation();
+		updatePos();
+	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
 		
-		updateAnimation();
-		setAnimation();
-		updatePos();
-		
 		g2d.drawImage(playerAnimations[playerAction][animationIndex], (int)xDelta, (int)yDelta, 250, 160, null);
-		
 		// repaint done in game thread/loop
 	}
 	
