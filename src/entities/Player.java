@@ -1,6 +1,6 @@
 package entities;
 
-import static animations.Constants.PlayerConstants.*;
+import static utils.Constants.PlayerConstants.*;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import javax.imageio.ImageIO;
+
+import utils.LoadSave;
 
 public class Player extends Entity{
 	private BufferedImage[][] playerAnimations;
@@ -35,7 +37,7 @@ public class Player extends Entity{
 	
 	public void render(Graphics2D g2d) {
 		g2d.drawImage(playerAnimations[playerAction][animationIndex], 
-				(int)x, (int)y, 250, 160, null);
+				(int)x, (int)y, 100, 90, null);
 	}
 
 	
@@ -96,26 +98,13 @@ public class Player extends Entity{
 	}
 	
 	private void loadAnimations() {
-		InputStream is = getClass().getResourceAsStream("/player.png");
-		try {
-			BufferedImage player = ImageIO.read(is);
+		BufferedImage playerImage = LoadSave.LoadSprites("/player.png");
 			
-			playerAnimations = new BufferedImage[9][6];
-			for(int col = 0; col < playerAnimations.length; col++) {
-				for(int row = 0; row < playerAnimations[col].length; row++) {
-					playerAnimations[col][row] = player.getSubimage(row*64, col*40, 64, 40);
-				}			
-			}
-		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		finally {
-			try {
-				is.close(); // free the resources
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		playerAnimations = new BufferedImage[9][6];
+		for(int col = 0; col < playerAnimations.length; col++) {
+			for(int row = 0; row < playerAnimations[col].length; row++) {
+				playerAnimations[col][row] = playerImage.getSubimage(row*64, col*40, 64, 40);
+			}			
 		}
 	}
 	

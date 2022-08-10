@@ -1,4 +1,4 @@
-package animations;
+package utils;
 
 public class Constants {
 	

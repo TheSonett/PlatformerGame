@@ -4,16 +4,27 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 
 import entities.Player;
+import levels.LevelManager;
 
 public class Game implements Runnable {
 	
 	private GameWindow gameWindow;
 	private GamePanel gamePanel;
 	private Thread gameLoop;
+	private Player player;
+	private LevelManager levelManager;
+	
 	private final int FPS = 120;
 	private final int UPS = 200;
 	
-	private Player player;
+	public final static int TILES_DEFAULT_SIZE = 32;
+	public final static float SCALE = 1.5f;
+	public final static int TILES_WIDTH = 26;
+	public final static int TILES_HEIGHT = 14;
+	public final static int TILES_SIZE = (int)(TILES_DEFAULT_SIZE * SCALE);
+	public final static int GAME_WIDTH = TILES_SIZE * TILES_WIDTH;
+	public final static int GAME_HEIGHT = TILES_SIZE * TILES_HEIGHT;
+	
 	
 	public Game() {
 		initGame();
@@ -27,6 +38,7 @@ public class Game implements Runnable {
 	
 	public void initGame() {
 		player = new Player(200, 200);
+		levelManager = new LevelManager(this);
 	}
 	
 	private void startGameLoop() {
@@ -36,10 +48,13 @@ public class Game implements Runnable {
 	
 	public void update() {
 		player.update();
+		levelManager.update();
 	}
 	
 	public void render(Graphics g) {
 		Graphics2D g2d = (Graphics2D) g;
+		
+		levelManager.render(g2d);
 		player.render(g2d);
 	}
 	

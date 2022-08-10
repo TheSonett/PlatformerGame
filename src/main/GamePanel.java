@@ -12,7 +12,8 @@ public class GamePanel extends JPanel {
 	private Game game;
 	
 	public GamePanel(Game game) {
-		this.setPreferredSize(new Dimension(1280, 800));
+		this.setPreferredSize(new Dimension(Game.GAME_WIDTH, Game.GAME_HEIGHT));
+		System.out.println("window size: " + Game.GAME_WIDTH + " X " + Game.GAME_HEIGHT);
 		this.game = game;
 		
 		addKeyListener(new KeyInputs(this));
